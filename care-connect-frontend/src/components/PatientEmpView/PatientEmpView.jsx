@@ -16,6 +16,7 @@ import {
 } from "../../services/empApiEndpoints";
 import Loader from "../Loader/Loader";
 import NoDataView from "./NoDataView";
+import LineChart from "../Charts/LineChart";
 
 const PatientEmpView = ({ patientId, setPatientEmpView }) => {
   const [patientData, setPatientData] = useState({});
@@ -34,7 +35,6 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
       setLoading(false);
     }
   };
-
 
   useEffect(() => {
     if (!patientData || Object.keys(patientData).length === 0) {
@@ -191,12 +191,10 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
               </div>
             </div>
           </div>
-          <div className="col-span-3 row-span-2 col-start-1 row-start-3 flex flex-col gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl">
-            4
+          <div className="col-span-3 row-span-2 col-start-1 row-start-3 flex flex-col justify-center pl-2 gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl">
+            <LineChart />
           </div>
-          <div className="row-span-4 col-start-4 row-start-1 flex flex-col gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl">
-            5
-          </div>
+          <div className="row-span-4 col-start-4 row-start-1 flex flex-col gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl"></div>
         </div>
       )}
     </>
