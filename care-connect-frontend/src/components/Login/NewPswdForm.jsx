@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { UserAuth } from "../../context/AuthContext";
-import logo from "../../assets/CareConnect.png";
+import logo from "../../assets/CareConnectSinFondo.png";
 
 function NewPswdForm({ email }) {
   const { newPswd } = UserAuth();
@@ -41,7 +41,7 @@ function NewPswdForm({ email }) {
     <div className="flex flex-col items-center h-screen pt-20 bg-white">
       <div className="relative h-full">
         <div className="w-full flex justify-center items-center">
-          <img src={logo} alt="logo" className="h-36 w-40"/>
+          <img src={logo} alt="logo" className="h-36 w-full"/>
         </div>
         <h2 className="text-5xl font-bold text-center text-gray-700 ">
           Ingresa tu nueva contraseña

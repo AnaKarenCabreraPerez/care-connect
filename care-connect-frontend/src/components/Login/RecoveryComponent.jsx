@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import svgLogo from "../../assets/CareConnect.png";
+import svgLogo from "../../assets/CareConnectSinFondo.png";
 import Swal from "sweetalert2";
 
 export const RecoveryComponent = ({
@@ -199,7 +199,7 @@ export const RecoveryComponent = ({
     <div className="flex items-center justify-center h-screen bg-white">
       <div className="flex flex-col items-center h-full pt-20">
         <div className="w-full">
-          <img src={svgLogo} className="mx-auto h-40 w-48" alt="Logo"/>
+          <img src={svgLogo} className="mx-auto h-40 w-full" alt="Logo"/>
         </div>
 
         <div className="px-6 max-w-md">

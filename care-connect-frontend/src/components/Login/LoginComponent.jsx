@@ -4,7 +4,7 @@ import { UserAuth } from "../../context/AuthContext";
 import { useState } from "react";
 import NewPswdForm from "./NewPswdForm";
 import RecoveryComponent from "./RecoveryComponent";
-import svgLogo from "../../assets/CareConnect.png";
+import svgLogo from "../../assets/CareConnectSinFondo.png";
 import imgBckg from "../../assets/LoginBckgImg.avif";
 
 const LoginComponent = () => {
@@ -99,7 +99,7 @@ const LoginComponent = () => {
                 <div>
                   <img
                     src={svgLogo}
-                    className="w-48 h-40 mx-auto "
+                    className="w-full h-48 mx-auto "
                     alt={`${svgLogo} logo de la marca`}
                   />
                 </div>

@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
 import Button from "@mui/material/Button";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import Logo from "../../assets/CareConnect.png";
-import SmallLogo from "../../assets/CareConnect.png";
+import Logo from "../../assets/CareConnectSinFondo.png";
+import SmallLogo from "../../assets/CareConnectSinFondo.png";
 
 const Sidebar = (props) => {
   const { logout, showTitles } = props;
