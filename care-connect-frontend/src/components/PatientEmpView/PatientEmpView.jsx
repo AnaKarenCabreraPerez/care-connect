@@ -111,7 +111,7 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
           <div className="col-span-2 flex flex-col gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl">
             <div className="w-full pt-1 flex justify-center">
               <h1 className="font-bold sm:text-xl lg:text-2xl text-[#283945]">
-                Vitales
+                Vitales (Última toma)
               </h1>
             </div>
             <div className="w-full grid grid-cols-3 gap-2 px-4">
