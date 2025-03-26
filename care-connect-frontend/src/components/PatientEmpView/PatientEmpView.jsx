@@ -7,6 +7,8 @@ import DeviceThermostatIcon from "@mui/icons-material/DeviceThermostat";
 import SpaIcon from "@mui/icons-material/Spa";
 import BloodtypeIcon from "@mui/icons-material/Bloodtype";
 import VaccinesIcon from "@mui/icons-material/Vaccines";
+import ErrorIcon from "@mui/icons-material/Error";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 
@@ -109,9 +111,12 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
             </div>
           </div>
           <div className="col-span-2 flex flex-col gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl">
-            <div className="w-full pt-1 flex justify-center">
+            <div className="w-full pt-1 flex justify-center items-center">
+              <IconButton aria-label="add" onClick={() => Swal.fire("Funcionalidad en desarrollo")}>
+                <AddCircleIcon sx={{ color: "#283945" }} />
+              </IconButton>
               <h1 className="font-bold sm:text-xl lg:text-2xl text-[#283945]">
-                Vitales (Última toma)
+                Vitales
               </h1>
             </div>
             <div className="w-full grid grid-cols-3 gap-2 px-4">
@@ -194,7 +199,52 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
           <div className="col-span-3 row-span-2 col-start-1 row-start-3 flex flex-col justify-center pl-2 gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl">
             <LineChart />
           </div>
-          <div className="row-span-4 col-start-4 row-start-1 flex flex-col gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl"></div>
+          <div className="row-span-4 col-start-4 row-start-1 flex flex-col gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl">
+            {/** SECCION PARA AGREGAR VITALES Y MOSTRAR LOS MEDICAMENTOS DEL PACIENTE */}
+            <div className="w-full h-full p-4 flex flex-col gap-2">
+              <div className="w-full flex">
+                <h1 className="font-bold sm:text-xl lg:text-2xl text-[#283945]">
+                  Medicamentos
+                </h1>
+              </div>
+              <div className="w-full h-[80%] flex flex-col gap-2">
+                {patientData.medicamentos &&
+                patientData.medicamentos.length > 0 ? (
+                  patientData.medicamentos.map((medicamento, index) => (
+                    <div
+                      key={index}
+                      className="w-full p-2 bg-white border border-gray-300 rounded-lg shadow-md"
+                    >
+                      <h2 className="font-bold text-[#283945] text-lg">
+                        {medicamento.nombre}
+                      </h2>
+                      <p>Dosis: {medicamento.dosis}</p>
+                      <p>Última vez administrado: {medicamento.ultima_vez}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="w-full h-full flex flex-col justify-center items-center gap-2">
+                    <ErrorIcon sx={{ color: "#283945", fontSize: 40 }} />
+                    <p>No hay medicamentos registrados.</p>
+                  </div>
+                )}
+              </div>
+              <div className="w-full flex justify-center mt-4 gap-4">
+                <button
+                  className="bg-[#283945] text-white font-bold py-2 px-4 rounded"
+                  onClick={() => Swal.fire("Funcionalidad en desarrollo")}
+                >
+                  Editar
+                </button>
+                <button
+                  className="bg-[#283945] text-white font-bold py-2 px-4 rounded"
+                  onClick={() => Swal.fire("Funcionalidad en desarrollo")}
+                >
+                  Añadir
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </>
