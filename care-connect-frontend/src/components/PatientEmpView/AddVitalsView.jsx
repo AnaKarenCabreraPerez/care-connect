@@ -1,8 +1,17 @@
 import React, { useState } from "react";
 import { Close, Save } from "@mui/icons-material";
 
-export const AddVitalsView = ({ setAddVitalsView }) => {
+import { addPatientVitals } from "../../services/empApiEndpoints";
+import Swal from "sweetalert2";
+
+export const AddVitalsView = ({
+  setAddVitalsView,
+  setPatientEmpView,
+  showPatients,
+  patientId,
+}) => {
   const [vitals, setVitals] = useState({
+    patient_id: patientId,
     pulso: "",
     frecuencia_respiratoria: "",
     presion_arterial: "",
@@ -13,12 +22,31 @@ export const AddVitalsView = ({ setAddVitalsView }) => {
     nivel_glucosa: "",
   });
   const [errors, setErrors] = useState({});
-  const [showError, setShowError] = useState(false); 
+  const [showError, setShowError] = useState(false);
+
+  const addPatientVitalsData = async (vitals) => {
+    try {
+      await addPatientVitals(vitals);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      Swal.fire({
+        icon: "success",
+        title: "¡Datos de signos vitales añadidos!",
+        showConfirmButton: false,
+        timer: 2500,
+      });
+      setAddVitalsView(false);
+      setPatientEmpView(showPatients ? false : true);
+    }
+  };
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setVitals({
       ...vitals,
-      [e.target.name]: e.target.value,
+      [name]: name === "presion_arterial" ? value : parseFloat(value) || "",
     });
 
     // Si el usuario llena un campo, quita el error
@@ -45,12 +73,12 @@ export const AddVitalsView = ({ setAddVitalsView }) => {
     }
 
     setShowError(false);
-    console.log("Datos enviados:", vitals);
-    // Aquí puedes manejar el envío a una API
+    console.log(vitals);
+    addPatientVitalsData(vitals);
   };
 
   return (
-    <div className="w-[450px] bg-[#d1d5d9] border border-[#d1d5d9] rounded-xl shadow-xl p-6 flex flex-col gap-4">
+    <div className="w-[450px] bg-[#d1d5d9] border border-[#d1d5d9] rounded-xl shadow-2xl p-6 flex flex-col gap-4">
       <h1 className="text-2xl font-semibold text-[#283945] text-center">
         Añadir Signos Vitales
       </h1>
@@ -63,21 +91,30 @@ export const AddVitalsView = ({ setAddVitalsView }) => {
 
       <form className="grid grid-cols-2 gap-4" onSubmit={handleSubmit}>
         {[
-          { placeholder: "Peso (kg)", name: "peso" },
-          { placeholder: "Estatura (cm)", name: "estatura" },
+          { placeholder: "Peso (kg)", name: "peso", type: "number" },
+          { placeholder: "Estatura (cm)", name: "estatura", type: "number" },
           {
             placeholder: "Presión arterial (mmHg)",
             name: "presion_arterial",
             type: "text",
           },
-          { placeholder: "Temperatura (°C)", name: "temperatura" },
-          { placeholder: "Oxigenación", name: "oxigenacion" },
-          { placeholder: "Pulso (lpm)", name: "pulso" },
+          {
+            placeholder: "Temperatura (°C)",
+            name: "temperatura",
+            type: "number",
+          },
+          { placeholder: "Oxigenación", name: "oxigenacion", type: "number" },
+          { placeholder: "Pulso (lpm)", name: "pulso", type: "number" },
           {
             placeholder: "Freq. respiratoria (rpm)",
             name: "frecuencia_respiratoria",
+            type: "number",
           },
-          { placeholder: "Nivel de glucosa (mg/dL)", name: "nivel_glucosa" },
+          {
+            placeholder: "Nivel de glucosa (mg/dL)",
+            name: "nivel_glucosa",
+            type: "number",
+          },
         ].map((field, index) => (
           <div
             key={index}

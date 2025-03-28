@@ -114,9 +114,7 @@ export async function deletePatient(id) {
 }
 export async function addPatientVitals(vitalsData) {
   try {
-    const url = `${API_BASE_URL}/vitals`;
-
-    console.log("vitalsData", JSON.stringify(vitalsData));
+    const url = `${API_BASE_URL}/vitals`;    
 
     const response = await fetch(url, {
       method: "POST",

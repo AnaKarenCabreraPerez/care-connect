@@ -10,6 +10,8 @@ const NoDataView = ({ setPatientEmpView, patientId }) => {
       {addVitalsView ? (
         <AddVitalsView
           setAddVitalsView={setAddVitalsView}
+          setPatientEmpView={setPatientEmpView}
+          showPatients={true}
           patientId={patientId}
         />
       ) : (

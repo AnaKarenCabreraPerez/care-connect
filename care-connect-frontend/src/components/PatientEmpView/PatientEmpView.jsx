@@ -12,24 +12,22 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 
-import {
-  fetchPatientLastVitals,
-  addPatientVitals,
-} from "../../services/empApiEndpoints";
+import { fetchPatientLastVitals } from "../../services/empApiEndpoints";
 import Loader from "../Loader/Loader";
 import NoDataView from "./NoDataView";
+import AddVitalsView from "./AddVitalsView";
 import LineChart from "../Charts/LineChart";
 
 const PatientEmpView = ({ patientId, setPatientEmpView }) => {
   const [patientData, setPatientData] = useState({});
   const [noDataView, setNoDataView] = useState(false);
+  const [addVitalsView, setAddVitalsView] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchPatientData = async (patientId) => {
     try {
       setLoading(true);
       const patientData = await fetchPatientLastVitals(patientId);
-      console.log(patientData);
       setPatientData(patientData);
     } catch (error) {
       setNoDataView(true);
@@ -46,6 +44,12 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
     }
   }, [patientId]);
 
+  useEffect(() => {
+    if (!addVitalsView) {
+      fetchPatientData(patientId);
+    }
+  }, [addVitalsView]);
+
   if (loading) {
     return <Loader />;
   }
@@ -57,6 +61,15 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
           setPatientEmpView={setPatientEmpView}
           patientId={patientId}
         />
+      ) : addVitalsView ? (
+        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-90 z-50">
+          <AddVitalsView
+            setAddVitalsView={setAddVitalsView}
+            setPatientEmpView={setPatientEmpView}
+            showPatients={false}
+            patientId={patientId}
+          />
+        </div>
       ) : (
         <div className="w-full h-full grid grid-cols-4 grid-rows-4 gap-2">
           <div className="row-span-2 flex flex-col gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl">
@@ -112,7 +125,10 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
           </div>
           <div className="col-span-2 flex flex-col gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl">
             <div className="w-full pt-1 flex justify-center items-center">
-              <IconButton aria-label="add" onClick={() => Swal.fire("Funcionalidad en desarrollo")}>
+              <IconButton
+                aria-label="add"
+                onClick={() => setAddVitalsView(true)}
+              >
                 <AddCircleIcon sx={{ color: "#283945" }} />
               </IconButton>
               <h1 className="font-bold sm:text-xl lg:text-2xl text-[#283945]">
