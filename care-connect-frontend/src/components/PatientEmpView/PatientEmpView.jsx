@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -17,18 +17,35 @@ import Loader from "../Loader/Loader";
 import NoDataView from "./NoDataView";
 import AddVitalsView from "./AddVitalsView";
 import LineChart from "../Charts/LineChart";
+import { HeaderContext } from "../../context/HeaderContext";
 
 const PatientEmpView = ({ patientId, setPatientEmpView }) => {
+  const { setHeaderTitle, setHeaderRoute } = useContext(HeaderContext);
   const [patientData, setPatientData] = useState({});
   const [noDataView, setNoDataView] = useState(false);
   const [addVitalsView, setAddVitalsView] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const handleBackButton = () => {
+    setHeaderTitle("Dashboard empleados");
+    setHeaderRoute("Inicio / Pacientes");
+    setPatientEmpView(false);
+  };
 
   const fetchPatientData = async (patientId) => {
     try {
       setLoading(true);
       const patientData = await fetchPatientLastVitals(patientId);
       setPatientData(patientData);
+      setHeaderTitle(
+        `Paciente: ${patientData.paciente.nombre} ${patientData.paciente.apellido}`
+      );
+      setHeaderRoute(
+        patientData.paciente.edad +
+          " años" +
+          " | " +
+          patientData.paciente.estado_salud
+      );
     } catch (error) {
       setNoDataView(true);
     } finally {
@@ -75,7 +92,7 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
           <div className="row-span-2 flex flex-col gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl">
             <div className="w-full p-4 pb-0 flex items-center">
               {/* Botón para regresar */}
-              <IconButton onClick={() => setPatientEmpView(false)}>
+              <IconButton onClick={() => handleBackButton()}>
                 <ArrowBackIosIcon />
               </IconButton>
               <h1 className="font-bold sm:text-xl lg:text-2xl text-[#283945]">

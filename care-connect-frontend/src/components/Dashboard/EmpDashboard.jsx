@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Swal from "sweetalert2";
 import { styled } from "@mui/material/styles";
 import { tableCellClasses } from "@mui/material/TableCell";
@@ -29,6 +29,7 @@ import {
   deletePatient,
 } from "../../services/empApiEndpoints";
 import PatientEmpView from "../PatientEmpView/PatientEmpView";
+import { HeaderContext } from "../../context/HeaderContext";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -57,6 +58,7 @@ const modalStyle = {
 };
 
 const EmpDashboard = () => {
+  const { setHeaderTitle, setHeaderRoute } = useContext(HeaderContext);
   const [patientEmpView, setPatientEmpView] = useState(false);
   const [patientId, setPatientId] = useState(null);
   const [search, setSearch] = useState("");
@@ -162,6 +164,8 @@ const EmpDashboard = () => {
   };
 
   useEffect(() => {
+    setHeaderTitle("Dashboard empleados");
+    setHeaderRoute("Inicio / Pacientes");
     fetchPatientsData();
   }, []);
 
@@ -181,7 +185,10 @@ const EmpDashboard = () => {
   return (
     <div className="flex flex-col w-full h-full gap-3 px-4 py-6 bg-transparent">
       {patientEmpView ? (
-        <PatientEmpView patientId={patientId} setPatientEmpView={setPatientEmpView} />
+        <PatientEmpView
+          patientId={patientId}
+          setPatientEmpView={setPatientEmpView}
+        />
       ) : (
         <>
           <div className="flex items-center justify-between w-full h-[10%] rounded-2xl p-4 bg-[#d1d5da]">
