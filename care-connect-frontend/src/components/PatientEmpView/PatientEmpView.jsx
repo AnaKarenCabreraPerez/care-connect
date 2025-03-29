@@ -44,6 +44,12 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
         patientData.paciente.edad +
           " años" +
           " | " +
+          patientData.peso +
+            " kg" +
+            " | " +
+            patientData.estatura +
+            `${patientData.estatura < 100 ? " m" : " cm"}` +
+            " | " +
           patientData.paciente.estado_salud
       );
     } catch (error) {
