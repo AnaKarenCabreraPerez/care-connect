@@ -130,5 +130,68 @@ app.get("/vitals/trends/:patient_id", async (req, res) => {
     res.json({ tendencia: data });
 });
 
+// Obtener todos los medicamentos de un paciente
+app.get('/patients/:id/medications', async (req, res) => {
+    const { id } = req.params;
+
+    const { data, error } = await supabase.from('medications').select('*').eq('patient_id', id);
+
+    if (error) return res.status(500).json({ error: error.message });
+
+    res.json(data);
+});
+
+// Agregar un nuevo medicamento a un paciente
+app.post('/patients/:id/medications', async (req, res) => {
+    const { id } = req.params;
+    const { medicamento, dosis } = req.body;
+
+    const { data, error } = await supabase.from('medications').insert([
+        { patient_id: id, medicamento, dosis }
+    ]).select();
+
+    if (error) return res.status(500).json({ error: error.message });
+
+    res.status(201).json(data[0]);
+});
+
+// Editar un medicamento existente
+app.put('/medications/:med_id', async (req, res) => {
+    const { med_id } = req.params;
+    const { medicamento, dosis } = req.body;
+
+    const { data, error } = await supabase.from('medications').update({ medicamento, dosis }).eq('id', med_id).select();
+
+    if (error) return res.status(500).json({ error: error.message });
+
+    res.json(data[0]);
+});
+
+// Eliminar un medicamento
+app.delete('/medications/:med_id', async (req, res) => {
+    const { med_id } = req.params;
+
+    const { error } = await supabase.from('medications').delete().eq('id', med_id);
+
+    if (error) return res.status(500).json({ error: error.message });
+
+    res.json({ message: "Medicamento eliminado correctamente" });
+});
+
+// Actualizar la última toma de un medicamento
+app.put('/medications/:med_id/update-last-dose', async (req, res) => {
+    const { med_id } = req.params;
+
+    const { data, error } = await supabase.from('medications')
+        .update({ ultima_toma: new Date().toISOString() })
+        .eq('id', med_id)
+        .select();
+
+    if (error) return res.status(500).json({ error: error.message });
+
+    res.json({ message: "Última toma actualizada", medicamento: data[0] });
+});
+
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
