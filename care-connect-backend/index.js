@@ -97,7 +97,7 @@ app.get("/vitals/last/:patient_id", async (req, res) => {
             .limit(1);
 
         if (vitalsError) return res.status(500).json({ error: vitalsError.message });
-        if (vitals.length === 0) return res.status(404).json({ error: "No hay registros para este paciente" });
+        if (vitals.length === 0) return res.status(404).json({ error: "No hay registros de signos vitales para este paciente" });
 
         // Obtener la información del paciente
         const { data: patient, error: patientError } = await supabase.from("patients")
@@ -107,8 +107,15 @@ app.get("/vitals/last/:patient_id", async (req, res) => {
 
         if (patientError || !patient) return res.status(404).json({ error: "Paciente no encontrado" });
 
+        // Obtener la lista de medicamentos del paciente
+        const { data: medications, error: medicationsError } = await supabase.from("medications")
+            .select("medicamento, dosis, ultima_toma")
+            .eq("patient_id", patient_id);
+
+        if (medicationsError) return res.status(500).json({ error: medicationsError.message });
+
         // Devolver la información combinada
-        res.json({ ...vitals[0], paciente: patient });
+        res.json({ ...vitals[0], paciente: patient, medicamentos: medications });
     } catch (error) {
         res.status(500).json({ error: "Error interno del servidor" });
     }

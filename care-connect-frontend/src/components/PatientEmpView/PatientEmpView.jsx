@@ -18,6 +18,7 @@ import NoDataView from "./NoDataView";
 import AddVitalsView from "./AddVitalsView";
 import LineChart from "../Charts/LineChart";
 import { HeaderContext } from "../../context/HeaderContext";
+import MedicationsTable from "./MedicationsTable";
 
 const PatientEmpView = ({ patientId, setPatientEmpView }) => {
   const { setHeaderTitle, setHeaderRoute } = useContext(HeaderContext);
@@ -45,11 +46,11 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
           " años" +
           " | " +
           patientData.peso +
-            " kg" +
-            " | " +
-            patientData.estatura +
-            `${patientData.estatura < 100 ? " m" : " cm"}` +
-            " | " +
+          " kg" +
+          " | " +
+          patientData.estatura +
+          `${patientData.estatura < 100 ? " m" : " cm"}` +
+          " | " +
           patientData.paciente.estado_salud
       );
     } catch (error) {
@@ -249,18 +250,9 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
               <div className="w-full h-[80%] flex flex-col gap-2">
                 {patientData.medicamentos &&
                 patientData.medicamentos.length > 0 ? (
-                  patientData.medicamentos.map((medicamento, index) => (
-                    <div
-                      key={index}
-                      className="w-full p-2 bg-white border border-gray-300 rounded-lg shadow-md"
-                    >
-                      <h2 className="font-bold text-[#283945] text-lg">
-                        {medicamento.nombre}
-                      </h2>
-                      <p>Dosis: {medicamento.dosis}</p>
-                      <p>Última vez administrado: {medicamento.ultima_vez}</p>
-                    </div>
-                  ))
+                  <MedicationsTable
+                    medicationsData={patientData.medicamentos}
+                  />
                 ) : (
                   <div className="w-full h-full flex flex-col justify-center items-center gap-2">
                     <ErrorIcon sx={{ color: "#283945", fontSize: 40 }} />
