@@ -106,55 +106,29 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
                 Paciente:
               </h1>
             </div>
-            <div className="w-full">
-              <ul className="w-full pl-6">
-                <li className="flex gap-2 items-center">
-                  <h2 className="font-bold text-[#283945] text-xl truncate">
-                    Nombre:
-                  </h2>
-                  <p>{patientData.paciente.nombre}</p>
-                </li>
-                <li className="flex gap-2 items-center">
-                  <h2 className="font-bold text-[#283945] text-xl truncate">
-                    Apellido:
-                  </h2>
-                  <p>{patientData.paciente.apellido}</p>
-                </li>
-                <li className="flex gap-2 items-center">
-                  <h2 className="font-bold text-[#283945] text-xl truncate">
-                    Edad:
-                  </h2>
-                  <p>{patientData.paciente.edad}</p>
-                </li>
-                <li className="flex gap-2 items-center">
-                  <h2 className="font-bold text-[#283945] text-xl truncate">
-                    Peso:
-                  </h2>
-                  <p>{patientData.peso}</p>
-                </li>
-                <li className="flex gap-2 items-center">
-                  <h2 className="font-bold text-[#283945] text-xl truncate">
-                    Estatura:
-                  </h2>
-                  <p>{patientData.estatura}</p>
-                </li>
-                <li className="flex gap-2 items-center">
-                  <h2 className="font-bold text-[#283945] text-xl truncate">
-                    Estado de salud:
-                  </h2>
-                  <p>{patientData.paciente.estado_salud}</p>
-                </li>
-              </ul>
+            <div className="w-full h-[50%] flex justify-center items-center p-4 gap-2">
+              <div
+                className="flex w-[50%] flex-col items-center justify-center text-center bg-[#283945] text-white rounded-2xl p-4 shadow-xl hover:cursor-pointer hover:scale-105 transition-transform duration-300"
+                onClick={() => setAddVitalsView(true)}
+              >
+                <IconButton>
+                  <AddCircleIcon sx={{ fontSize: 40, color: "#FFFFFF" }} />
+                </IconButton>
+                <p className="font-bold text-[#FFFFFF]">Añadir Vitales</p>
+              </div>
+              <div
+                className="flex w-[50%] flex-col items-center justify-center text-center bg-[#283945] text-white rounded-2xl p-4 shadow-xl hover:cursor-pointer hover:scale-105 transition-transform duration-300"
+                onClick={() => Swal.fire("Notificación enviada al familiar")}
+              >
+                <IconButton>
+                  <ErrorIcon sx={{ fontSize: 40, color: "#FFFFFF" }} />
+                </IconButton>
+                <p className="font-bold text-[#FFFFFF]">Notificar Familiar</p>
+              </div>
             </div>
           </div>
           <div className="col-span-2 flex flex-col gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl">
             <div className="w-full pt-1 flex justify-center items-center">
-              <IconButton
-                aria-label="add"
-                onClick={() => setAddVitalsView(true)}
-              >
-                <AddCircleIcon sx={{ color: "#283945" }} />
-              </IconButton>
               <h1 className="font-bold sm:text-xl lg:text-2xl text-[#283945]">
                 Vitales
               </h1>
