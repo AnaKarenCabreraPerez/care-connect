@@ -188,9 +188,11 @@ app.get("/vitals/last/:patient_id", async (req, res) => {
         );
 
         return {
+          id: med.id,
           medicamento: med.medicamento,
           dosis: med.dosis,
           frecuencia: med.frecuencia,
+          ultima_toma: med.ultima_toma,
           siguiente_toma: siguienteToma.toISOString(),
           atrasado: siguienteToma < now,
         };
@@ -277,17 +279,15 @@ app.put("/medications/:med_id", async (req, res) => {
   res.json(data[0]);
 });
 
-// Eliminar uno o más medicamentos por IDs
-app.delete("/medications", async (req, res) => {
-  const { ids } = req.body; // Espera un array de IDs
-  if (!Array.isArray(ids))
-    return res.status(400).json({ error: "Se requiere un arreglo de IDs" });
+// Eliminar un medicamento
+app.delete("/medications/delete/:med_id", async (req, res) => {
+  const { med_id } = req.params;
 
-  const { error } = await supabase.from("medications").delete().in("id", ids);
+  const { error } = await supabase.from("medications").delete().eq("id", med_id);
 
   if (error) return res.status(500).json({ error: error.message });
 
-  res.json({ message: "Medicamentos eliminados correctamente" });
+  res.json({ message: "Medicamento eliminado correctamente" });
 });
 
 // Actualizar la última toma de un medicamento

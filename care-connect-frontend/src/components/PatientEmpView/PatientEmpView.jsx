@@ -13,7 +13,12 @@ import { Modal, Box } from "@mui/material";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 
-import { fetchPatientLastVitals } from "../../services/empApiEndpoints";
+import {
+  fetchPatientLastVitals,
+  updateMedicationDose,
+  updateMedication,
+  deleteMedication,
+} from "../../services/empApiEndpoints";
 import Loader from "../Loader/Loader";
 import NoDataView from "./NoDataView";
 import AddVitalsView from "./AddVitalsView";
@@ -64,9 +69,133 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
     }
   };
 
-  // TODO: Implementar funciones para editar y eliminar medicamentos
-  const handleEditMed = (med) => {};
-  const handleDeleteMed = (med) => {};
+  /**------------- Meds functions ---------------- */
+  const handleUpdateMed = async (medId) => {
+    try {
+      setLoading(true);
+      await updateMedicationDose(medId);
+      Swal.fire({
+        icon: "success",
+        title: "Medicamento actualizado",
+        text: "La dosis del medicamento ha sido actualizada.",
+        confirmButtonText: "Aceptar",
+      });
+      fetchPatientData(patientId);
+    } catch (error) {
+      setNoDataView(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleEditMed = async (med) => {
+    handleCloseModal();
+
+    const { value: formValues, isConfirmed } = await Swal.fire({
+      title: "Editar Medicamento",
+      html: `
+        <input id="swal-input1" class="swal2-input" placeholder="Medicamento" value="${med.medicamento}">
+        <input id="swal-input2" class="swal2-input" placeholder="Dosis" value="${med.dosis}">
+        <input id="swal-input3" class="swal2-input" type="number" placeholder="Frecuencia (horas)" value="${med.frecuencia}">
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Guardar",
+      cancelButtonText: "Cancelar",
+      buttonsStyling: false,
+      didRender: () => {
+        const confirmBtn = Swal.getConfirmButton();
+        const cancelBtn = Swal.getCancelButton();
+
+        [confirmBtn, cancelBtn].forEach((btn) => {
+          btn.style.backgroundColor = "#283945";
+          btn.style.color = "white";
+          btn.style.border = "none";
+          btn.style.borderRadius = "5px";
+          btn.style.padding = "8px 16px";
+          btn.style.margin = "0 4px";
+          btn.style.fontWeight = "600";
+          btn.style.fontSize = "14px";
+          btn.style.cursor = "pointer";
+        });
+      },
+      focusConfirm: false,
+      preConfirm: () => {
+        const medicamento = document.getElementById("swal-input1").value.trim();
+        const dosis = document.getElementById("swal-input2").value.trim();
+        const frecuencia = document.getElementById("swal-input3").value.trim();
+
+        if (!medicamento || !dosis || !frecuencia) {
+          Swal.showValidationMessage("Todos los campos son obligatorios");
+          return false;
+        }
+
+        if (isNaN(Number(frecuencia)) || Number(frecuencia) <= 0) {
+          Swal.showValidationMessage(
+            "La frecuencia debe ser un número mayor a 0"
+          );
+          return false;
+        }
+
+        return {
+          ...med,
+          medicamento,
+          dosis,
+          frecuencia: Number(frecuencia),
+        };
+      },
+    });
+
+    if (isConfirmed && formValues) {
+      try {
+        await updateMedication(formValues, med.id);
+        Swal.fire({
+          icon: "success",
+          title: "Medicamento actualizado",
+          text: "El medicamento ha sido actualizado.",
+          confirmButtonText: "Aceptar",
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo actualizar el medicamento.",
+          confirmButtonText: "Aceptar",
+        });
+      } finally {
+        fetchPatientData(patientId);
+      }
+    } else {
+      handleOpenModal();
+    }
+  };
+  const handleDeleteMed = async (med) => {
+    handleCloseModal();
+    const result = await Swal.fire({
+      title: `¿Eliminar ${med.medicamento}?`,
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        setLoading(true);
+        await deleteMedication(med.id);
+        Swal.fire(
+          "Eliminado",
+          "El medicamento fue eliminado correctamente",
+          "success"
+        );
+        fetchPatientData(patientId);
+      } catch (error) {
+        Swal.fire("Error", "No se pudo eliminar el medicamento", "error");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+  /**------------------------------------------- */
 
   useEffect(() => {
     if (!patientData || Object.keys(patientData).length === 0) {
@@ -219,17 +348,19 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
             </div>
           </div>
           <div className="col-span-3 row-span-2 col-start-1 row-start-3 flex flex-col justify-center pl-2 gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl">
+            {/* TODO: Añadir funcionalidad de gráfica ya con backend */}
             <LineChart />
           </div>
           <div className="row-span-4 col-start-4 row-start-1 flex flex-col gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl">
             {/* Sección de medicamentos */}
             <div className="w-full h-full p-4 flex flex-col gap-4">
+              {/* TODO: Añadir medicamento */}
               <h1 className="font-bold sm:text-xl lg:text-2xl text-[#283945]">
                 Medicamentos
               </h1>
 
               {patientData.medicamentos.length > 0 ? (
-                <div className="flex flex-col gap-2 overflow-y-scroll pr-2">
+                <div className="flex flex-col gap-2 overflow-y-scroll pr-2 rounded-lg">
                   {patientData.medicamentos.map((medicamento, index) => (
                     <div
                       key={index}
@@ -257,7 +388,7 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
                       </p>
                       <p>
                         <span className="font-semibold text-[#283945]">
-                          Toma:
+                          Sig. Toma:
                         </span>{" "}
                         {new Date(medicamento.siguiente_toma).toLocaleString()}
                       </p>
@@ -266,14 +397,9 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
                           ¡Toma atrasada!
                         </p>
                       )}
-                      {/*TODO Implementar funcion para actualizar toma de medicamento */}
                       <button
                         className="bg-[#283945] text-white text-xs font-semibold py-1 px-2 rounded self-end mt-1"
-                        onClick={() =>
-                          Swal.fire(
-                            `Actualizar toma para ${medicamento.medicamento}`
-                          )
-                        }
+                        onClick={() => handleUpdateMed(medicamento.id)}
                       >
                         Actualizar
                       </button>
@@ -298,7 +424,6 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
             </div>
 
             {/* MODAL PARA TODOS LOS MEDICAMENTOS */}
-            {/*TODO: Endpoint para obtener todos los medicamentos */}
             <Modal open={open} onClose={handleCloseModal}>
               <Box className="bg-white p-6 rounded-xl shadow-lg w-11/12 md:w-2/3 lg:w-1/2 mx-auto mt-24 max-h-[80vh] overflow-auto">
                 <h2 className="text-2xl font-bold text-[#283945] mb-4">
@@ -306,9 +431,9 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
                 </h2>
                 {patientData.medicamentos?.length > 0 ? (
                   <div className="space-y-4">
-                    {patientData.medicamentos.map((med, index) => (
+                    {patientData.medicamentos.map((med) => (
                       <div
-                        key={index}
+                        key={med.id}
                         className="border border-gray-300 p-3 rounded-lg shadow-sm flex flex-col gap-2"
                       >
                         <div>
@@ -321,6 +446,10 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
                           <p>
                             <strong>Frecuencia:</strong> cada {med.frecuencia}{" "}
                             horas
+                          </p>
+                          <p>
+                            <strong>Ultima toma:</strong>{" "}
+                            {new Date(med.ultima_toma).toLocaleString()}
                           </p>
                           <p>
                             <strong>Siguiente toma:</strong>{" "}

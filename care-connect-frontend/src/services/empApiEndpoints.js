@@ -1,5 +1,6 @@
 import { API_BASE_URL } from "../api/apiConfig";
 
+/**------------ Patients API Endpoints ------------------*/
 export async function fetchPatients() {
   try {
     const url = `${API_BASE_URL}/patients`;
@@ -114,7 +115,7 @@ export async function deletePatient(id) {
 }
 export async function addPatientVitals(vitalsData) {
   try {
-    const url = `${API_BASE_URL}/vitals`;    
+    const url = `${API_BASE_URL}/vitals`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -163,6 +164,92 @@ export async function fetchPatientLastVitals(patientId) {
       //console.log("Fetch aborted");
     } else {
       console.error("Error fetching patient data", error);
+    }
+    throw error;
+  }
+}
+
+/**------------ Meds API Endpoints ------------------*/
+export async function updateMedicationDose(medId) {
+  try {
+    const url = `${API_BASE_URL}/medications/${medId}/update-last-dose`;
+
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    if (error.name === "AbortError") {
+      //console.log("Fetch aborted");
+    } else {
+      console.error("Error fetching updating medication Dose", error);
+    }
+    throw error;
+  }
+}
+
+export async function updateMedication(med, id) {
+  try {
+    const url = `${API_BASE_URL}/medications/${id}`;
+
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(med),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    if (error.name === "AbortError") {
+      //console.log("Fetch aborted");
+    } else {
+      console.error("Error fetching updating medication", error);
+    }
+    throw error;
+  }
+}
+
+export async function deleteMedication(id) {
+  try {
+    const url = `${API_BASE_URL}/medications/delete/${id}`;
+
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    if (error.name === "AbortError") {
+      //console.log("Fetch aborted");
+    } else {
+      console.error("Error deleting medication", error);
     }
     throw error;
   }
