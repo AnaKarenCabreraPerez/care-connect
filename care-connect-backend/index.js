@@ -220,18 +220,51 @@ app.get("/vitals/trends/:patient_id", async (req, res) => {
   const { data, error } = await supabase
     .from("vitals")
     .select(
-      "fecha_registro, pulso, frecuencia_respiratoria , presion_arterial, temperatura, oxigenacion, peso, estatura, nivel_glucosa"
+      "fecha_registro, pulso, frecuencia_respiratoria, temperatura, oxigenacion, peso, nivel_glucosa"
     )
     .eq("patient_id", patient_id)
     .order("fecha_registro", { ascending: true });
 
   if (error) return res.status(500).json({ error: error.message });
-  if (data.length === 0)
-    return res
-      .status(404)
-      .json({ error: "No hay registros suficientes para calcular tendencia" });
 
-  res.json({ tendencia: data });
+  if (data.length === 0) {
+    return res.status(404).json({
+      error: "No hay registros suficientes para calcular tendencia",
+    });
+  }
+
+  // Inicializar arreglos para cada tipo de signo vital
+  const peso = [];
+  const pulso = [];
+  const temperatura = [];
+  const oxigenacion = [];
+  const frecuencia_respiratoria = [];
+  const nivel_glucosa = [];
+  const categories = [];
+
+  data.forEach((registro) => {
+    peso.push(registro.peso || 0);
+    pulso.push(registro.pulso || 0);
+    temperatura.push(registro.temperatura || 0);
+    oxigenacion.push(registro.oxigenacion || 0);
+    frecuencia_respiratoria.push(registro.frecuencia_respiratoria || 0);
+    nivel_glucosa.push(registro.nivel_glucosa || 0);
+    categories.push(registro.fecha_registro);
+  });
+
+  const seriesData = [
+    { name: "Peso", data: peso },
+    { name: "Pulso", data: pulso },
+    { name: "Temperatura", data: temperatura },
+    { name: "Oxigenación", data: oxigenacion },
+    { name: "Frecuencia respiratoria", data: frecuencia_respiratoria },
+    { name: "Nivel de glucosa", data: nivel_glucosa },
+  ];
+
+  res.json({
+    seriesData,
+    categories,
+  });
 });
 
 // Obtener todos los medicamentos de un paciente
@@ -283,7 +316,10 @@ app.put("/medications/:med_id", async (req, res) => {
 app.delete("/medications/delete/:med_id", async (req, res) => {
   const { med_id } = req.params;
 
-  const { error } = await supabase.from("medications").delete().eq("id", med_id);
+  const { error } = await supabase
+    .from("medications")
+    .delete()
+    .eq("id", med_id);
 
   if (error) return res.status(500).json({ error: error.message });
 

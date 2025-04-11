@@ -51,6 +51,7 @@ function App() {
                   </ProtectedRoute>
                 }
               >
+                {/* TODO: Bug enrutamiento */}
                 {/* Redirige a la vista correspondiente según el rol */}
                 <Route path="emp-dashboard" element={<EmpDashboard />} />
                 <Route path="fam-dashboard" element={<FamDashboard />} />

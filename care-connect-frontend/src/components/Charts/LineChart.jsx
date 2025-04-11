@@ -1,35 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import ReactApexChart from "react-apexcharts";
 
-const LineChart = () => {
+const LineChart = ({ patientChartData }) => {
   const [state, setState] = useState({
-    series: [
-      {
-        name: "Peso",
-        data: [31, 40, 28, 51, 42, 109, 100],
-      },
-      {
-        name: "Pulso",
-        data: [11, 32, 45, 32, 34, 52, 41],
-      },
-      {
-        name: "Temperatura",
-        data: [21, 42, 55, 42, 44, 62, 51],
-      },
-      {
-        name: "Oxigenación",
-        data: [31, 40, 28, 51, 42, 109, 100],
-      },
-      {
-        name: "Frecuencia respiratoria",
-        data: [21, 42, 55, 42, 44, 62, 51],
-      },
-      {
-        name: "Nivel de glucosa",
-        data: [31, 40, 28, 51, 42, 109, 100],
-      },
-    ],
+    series: [],
     options: {
       title: {
         text: "Histórico",
@@ -45,6 +20,15 @@ const LineChart = () => {
           color: "#283945",
         },
       },
+      colors: [
+        "#7E57C2", 
+        "#E53935", 
+        "#FFB300",
+        "#26C6DA", 
+        "#66BB6A", 
+        "#8D6E63"  
+      ]
+      ,
       chart: {
         height: 350,
         type: "line",
@@ -57,15 +41,11 @@ const LineChart = () => {
       },
       xaxis: {
         type: "datetime",
-        categories: [
-          "2025-03-15T02:02:41.014255",
-          "2025-03-16T02:02:41.014255",
-          "2025-03-17T02:02:41.014255",
-          "2025-03-18T02:02:41.014255",
-          "2025-03-19T02:02:41.014255",
-          "2025-03-20T02:02:41.014255",
-          "2025-03-21T02:02:41.014255",
-        ],
+        categories: [],
+      },
+      yaxis: {
+        min: undefined, // Se calculará dinámicamente
+        max: undefined, // Se calculará dinámicamente
       },
       tooltip: {
         x: {
@@ -74,6 +54,39 @@ const LineChart = () => {
       },
     },
   });
+
+  useEffect(() => {
+    if (patientChartData.seriesData && patientChartData.seriesData.length > 0) {
+      // Calcula el rango dinámico del eje Y
+      const allValues = patientChartData.seriesData.flatMap(
+        (series) => series.data
+      );
+      const minValue = Math.min(...allValues);
+      const maxValue = Math.max(...allValues);
+
+      // Ajusta un pequeño margen para evitar que los puntos estén en los bordes
+      const margin = (maxValue - minValue) * 0.1;
+
+      console.log("Min value:", minValue);
+
+      setState((prevState) => ({
+        ...prevState,
+        series: patientChartData.seriesData,
+        options: {
+          ...prevState.options,
+          xaxis: {
+            ...prevState.options.xaxis,
+            categories: patientChartData.categories,
+          },
+          yaxis: {
+            ...prevState.options.yaxis,
+            min: minValue - margin,
+            max: maxValue + margin,
+          },
+        },
+      }));
+    }
+  }, [patientChartData]);
 
   return (
     <div id="chart">

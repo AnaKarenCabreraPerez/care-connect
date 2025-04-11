@@ -15,6 +15,7 @@ import Swal from "sweetalert2";
 
 import {
   fetchPatientLastVitals,
+  fetchPatientChartData,
   addMedication,
   updateMedicationDose,
   updateMedication,
@@ -29,6 +30,7 @@ import { HeaderContext } from "../../context/HeaderContext";
 const PatientEmpView = ({ patientId, setPatientEmpView }) => {
   const { setHeaderTitle, setHeaderRoute } = useContext(HeaderContext);
   const [patientData, setPatientData] = useState({});
+  const [patientChartData, setPatientChartData] = useState({});
   const [noDataView, setNoDataView] = useState(false);
   const [addVitalsView, setAddVitalsView] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -47,6 +49,8 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
     try {
       setLoading(true);
       const patientData = await fetchPatientLastVitals(patientId);
+      const chartData = await fetchPatientChartData(patientId);
+      setPatientChartData(chartData);
       setPatientData(patientData);
       setHeaderTitle(
         `Paciente: ${patientData.paciente.nombre} ${patientData.paciente.apellido}`
@@ -301,6 +305,7 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
         />
       ) : addVitalsView ? (
         <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-90 z-50">
+          {/* TODO: Responsive para iPad */}
           <AddVitalsView
             setAddVitalsView={setAddVitalsView}
             setPatientEmpView={setPatientEmpView}
@@ -334,7 +339,7 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
                 className="flex w-[50%] flex-col items-center justify-center text-center bg-[#283945] text-white rounded-2xl p-4 shadow-xl hover:cursor-pointer hover:scale-105 transition-transform duration-300"
                 onClick={() => Swal.fire("Notificación enviada al familiar")}
               >
-                {/* TODO: Funcionalidad de notificación al familiar */}
+                {/* TODO: Notificación al familiar */}
                 <IconButton>
                   <ErrorIcon sx={{ fontSize: 40, color: "#FFFFFF" }} />
                 </IconButton>
@@ -426,8 +431,7 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
             </div>
           </div>
           <div className="col-span-3 row-span-2 col-start-1 row-start-3 flex flex-col justify-center pl-2 gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl">
-            {/* TODO: Añadir funcionalidad de gráfica ya con backend */}
-            <LineChart />
+            <LineChart patientChartData={patientChartData}/>
           </div>
           <div className="row-span-4 col-start-4 row-start-1 flex flex-col gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl">
             {/* Sección de medicamentos */}
