@@ -15,6 +15,7 @@ import Swal from "sweetalert2";
 
 import {
   fetchPatientLastVitals,
+  addMedication,
   updateMedicationDose,
   updateMedication,
   deleteMedication,
@@ -70,6 +71,82 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
   };
 
   /**------------- Meds functions ---------------- */
+  const handleAddMedication = async () => {
+    const { value: formValues, isConfirmed } = await Swal.fire({
+      title: "Añadir Medicamento",
+      html: `
+        <input id="swal-input1" class="swal2-input" placeholder="Nombre del medicamento">
+        <input id="swal-input2" class="swal2-input" placeholder="Dosis (ej: 500mg)">
+        <input id="swal-input3" class="swal2-input" type="number" placeholder="Frecuencia (horas)">
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Agregar",
+      cancelButtonText: "Cancelar",
+      buttonsStyling: false,
+      didRender: () => {
+        const confirmBtn = Swal.getConfirmButton();
+        const cancelBtn = Swal.getCancelButton();
+        [confirmBtn, cancelBtn].forEach((btn) => {
+          btn.style.backgroundColor = "#283945";
+          btn.style.color = "white";
+          btn.style.border = "none";
+          btn.style.borderRadius = "5px";
+          btn.style.padding = "8px 16px";
+          btn.style.margin = "0 4px";
+          btn.style.fontWeight = "600";
+          btn.style.fontSize = "14px";
+          btn.style.cursor = "pointer";
+        });
+      },
+      focusConfirm: false,
+      preConfirm: () => {
+        const medicamento = document.getElementById("swal-input1").value.trim();
+        const dosis = document.getElementById("swal-input2").value.trim();
+        const frecuencia = document.getElementById("swal-input3").value.trim();
+
+        if (!medicamento || !dosis || !frecuencia) {
+          Swal.showValidationMessage("Todos los campos son obligatorios");
+          return false;
+        }
+
+        if (isNaN(Number(frecuencia)) || Number(frecuencia) <= 0) {
+          Swal.showValidationMessage(
+            "La frecuencia debe ser un número mayor a 0"
+          );
+          return false;
+        }
+
+        return {
+          medicamento,
+          dosis,
+          frecuencia: Number(frecuencia),
+        };
+      },
+    });
+
+    if (isConfirmed && formValues) {
+      try {
+        setLoading(true);
+        await addMedication(formValues, patientId);
+        Swal.fire({
+          icon: "success",
+          title: "Medicamento añadido!",
+          confirmButtonText: "Aceptar",
+        });
+        fetchPatientData(patientId);
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo añadir el medicamento.",
+          confirmButtonText: "Aceptar",
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   const handleUpdateMed = async (medId) => {
     try {
       setLoading(true);
@@ -257,6 +334,7 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
                 className="flex w-[50%] flex-col items-center justify-center text-center bg-[#283945] text-white rounded-2xl p-4 shadow-xl hover:cursor-pointer hover:scale-105 transition-transform duration-300"
                 onClick={() => Swal.fire("Notificación enviada al familiar")}
               >
+                {/* TODO: Funcionalidad de notificación al familiar */}
                 <IconButton>
                   <ErrorIcon sx={{ fontSize: 40, color: "#FFFFFF" }} />
                 </IconButton>
@@ -354,9 +432,11 @@ const PatientEmpView = ({ patientId, setPatientEmpView }) => {
           <div className="row-span-4 col-start-4 row-start-1 flex flex-col gap-1 bg-[#d1d5d9] border-black border-1 rounded-2xl shadow-xl">
             {/* Sección de medicamentos */}
             <div className="w-full h-full p-4 flex flex-col gap-4">
-              {/* TODO: Añadir medicamento */}
               <h1 className="font-bold sm:text-xl lg:text-2xl text-[#283945]">
                 Medicamentos
+                <IconButton onClick={handleAddMedication}>
+                  <AddCircleIcon sx={{ color: "#283945" }} />
+                </IconButton>
               </h1>
 
               {patientData.medicamentos.length > 0 ? (
