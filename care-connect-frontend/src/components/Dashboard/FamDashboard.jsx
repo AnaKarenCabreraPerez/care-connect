@@ -7,6 +7,7 @@ import React from "react";
 //        Dejar notas sobre el abuelo
 //    Pueden ver eventos del asilo
 //    Panel de alertas sobre su abuelo
+// Borrar Git Anterior
 
 const FamDashboard = () => {
 
