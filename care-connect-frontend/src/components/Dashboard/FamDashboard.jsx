@@ -1,5 +1,13 @@
 import React from "react";
 
+// Cual es el usuario y contraseña para entrar a esta seccion
+// Que debe de ver un Familiar 
+//    Pueden ver los datos del abuelo
+//        Nombre del cuidador asignado 
+//        Dejar notas sobre el abuelo
+//    Pueden ver eventos del asilo
+//    Panel de alertas sobre su abuelo
+
 const FamDashboard = () => {
 
   return (
